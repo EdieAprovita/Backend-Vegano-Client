@@ -13,6 +13,8 @@ const orderData = {
 
 //TYPES
 
+const CART_CLEAR_ITEMS = 'CART_RESET'
+
 const ORDER_CREATE_REQUEST = 'ORDER_CREATE_REQUEST'
 const ORDER_CREATE_SUCCESS = 'ORDER_CREATE_SUCCESS'
 const ORDER_CREATE_FAIL = 'ORDER_CREATE_FAIL'
@@ -47,21 +49,26 @@ export default function orderReducer(state = orderData, action) {
 	switch (action.type) {
 		case ORDER_CREATE_REQUEST:
 			return {
+				...state,
 				loading: true,
 			}
 		case ORDER_CREATE_SUCCESS:
 			return {
+				...state,
 				loading: false,
 				success: true,
 				order: action.payload,
 			}
 		case ORDER_CREATE_FAIL:
 			return {
+				...state,
 				loading: false,
 				error: action.payload,
 			}
 		case ORDER_CREATE_RESET:
-			return {}
+			return {
+				...state,
+			}
 		case ORDER_DETAILS_REQUEST:
 			return {
 				...state,
@@ -113,6 +120,7 @@ export default function orderReducer(state = orderData, action) {
 			}
 		case ORDER_DELIVER_FAIL:
 			return {
+				...state,
 				loading: false,
 				error: action.payload,
 			}
@@ -137,19 +145,23 @@ export default function orderReducer(state = orderData, action) {
 			}
 		case ORDER_LIST_MY_RESET:
 			return {
+				...state,
 				orders: [],
 			}
 		case ORDER_LIST_REQUEST:
 			return {
+				...state,
 				loading: true,
 			}
 		case ORDER_LIST_SUCCESS:
 			return {
+				...state,
 				loading: true,
 				orders: action.payload,
 			}
 		case ORDER_LIST_FAIL:
 			return {
+				...state,
 				loading: false,
 				error: action.payload,
 			}
@@ -159,3 +171,46 @@ export default function orderReducer(state = orderData, action) {
 }
 
 //ACTIONS
+
+export const createOrder = order => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: ORDER_CREATE_REQUEST,
+		})
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${userInfo.token}`,
+			},
+		}
+
+		const { data } = await axios.post(`/api/orders`, order, config)
+
+		dispatch({
+			type: ORDER_CREATE_SUCCESS,
+			payload: data,
+		})
+		dispatch({
+			type: CART_CLEAR_ITEMS,
+			payload: data,
+		})
+		localStorage.removeItem('cartItems')
+	} catch (error) {
+		const message =
+			error.response && error.response.data.message
+				? error.response.data.message
+				: error.message
+		if (message === 'Not authorized, token failed') {
+			dispatch(logout())
+		}
+		dispatch({
+			type: ORDER_CREATE_FAIL,
+			payload: message,
+		})
+	}
+}
