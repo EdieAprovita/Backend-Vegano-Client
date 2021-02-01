@@ -1,74 +1,67 @@
 import axios from 'axios'
 
-//CONSTANTS
-
-const orderData = {
-	loading: false,
-	success: false,
-	orderItems: [],
-	orders: [],
-	shippingAddress: {},
-	error: undefined,
-}
+import { logout } from './authDucks'
 
 //TYPES
 
-const CART_CLEAR_ITEMS = 'CART_RESET'
+export const ORDER_CREATE_REQUEST = 'ORDER_CREATE_REQUEST'
+export const ORDER_CREATE_SUCCESS = 'ORDER_CREATE_SUCCESS'
+export const ORDER_CREATE_FAIL = 'ORDER_CREATE_FAIL'
+export const ORDER_CREATE_RESET = 'ORDER_CREATE_RESET'
 
-const ORDER_CREATE_REQUEST = 'ORDER_CREATE_REQUEST'
-const ORDER_CREATE_SUCCESS = 'ORDER_CREATE_SUCCESS'
-const ORDER_CREATE_FAIL = 'ORDER_CREATE_FAIL'
-const ORDER_CREATE_RESET = 'ORDER_CREATE_RESET'
+export const ORDER_DETAILS_REQUEST = 'ORDER_DETAILS_REQUEST'
+export const ORDER_DETAILS_SUCCESS = 'ORDER_DETAILS_SUCCESS'
+export const ORDER_DETAILS_FAIL = 'ORDER_DETAILS_FAIL'
 
-const ORDER_DETAILS_REQUEST = 'ORDER_DETAILS_REQUEST'
-const ORDER_DETAILS_SUCCESS = 'ORDER_DETAILS_SUCCESS'
-const ORDER_DETAILS_FAIL = 'ORDER_DETAILS_FAIL'
+export const ORDER_PAY_REQUEST = 'ORDER_PAY_REQUEST'
+export const ORDER_PAY_SUCCESS = 'ORDER_PAY_SUCCESS'
+export const ORDER_PAY_FAIL = 'ORDER_PAY_FAIL'
+export const ORDER_PAY_RESET = 'ORDER_PAY_RESET'
 
-const ORDER_PAY_REQUEST = 'ORDER_PAY_REQUEST'
-const ORDER_PAY_SUCCESS = 'ORDER_PAY_SUCCESS'
-const ORDER_PAY_FAIL = 'ORDER_PAY_FAIL'
-const ORDER_PAY_RESET = 'ORDER_PAY_RESET'
+export const ORDER_LIST_MY_REQUEST = 'ORDER_LIST_MY_REQUEST'
+export const ORDER_LIST_MY_SUCCESS = 'ORDER_LIST_MY_SUCCESS'
+export const ORDER_LIST_MY_FAIL = 'ORDER_LIST_MY_FAIL'
+export const ORDER_LIST_MY_RESET = 'ORDER_LIST_MY_RESET'
 
-const ORDER_LIST_MY_REQUEST = 'ORDER_LIST_MY_REQUEST'
-const ORDER_LIST_MY_SUCCESS = 'ORDER_LIST_MY_SUCCESS'
-const ORDER_LIST_MY_FAIL = 'ORDER_LIST_MY_FAIL'
-const ORDER_LIST_MY_RESET = 'ORDER_LIST_MY_RESET'
+export const ORDER_LIST_REQUEST = 'ORDER_LIST_REQUEST'
+export const ORDER_LIST_SUCCESS = 'ORDER_LIST_SUCCESS'
+export const ORDER_LIST_FAIL = 'ORDER_LIST_FAIL'
 
-const ORDER_LIST_REQUEST = 'ORDER_LIST_REQUEST'
-const ORDER_LIST_SUCCESS = 'ORDER_LIST_SUCCESS'
-const ORDER_LIST_FAIL = 'ORDER_LIST_FAIL'
-
-const ORDER_DELIVER_REQUEST = 'ORDER_DELIVER_REQUEST'
-const ORDER_DELIVER_SUCCESS = 'ORDER_DELIVER_SUCCESS'
-const ORDER_DELIVER_FAIL = 'ORDER_DELIVER_FAIL'
-const ORDER_DELIVER_RESET = 'ORDER_DELIVER_RESET'
+export const ORDER_DELIVER_REQUEST = 'ORDER_DELIVER_REQUEST'
+export const ORDER_DELIVER_SUCCESS = 'ORDER_DELIVER_SUCCESS'
+export const ORDER_DELIVER_FAIL = 'ORDER_DELIVER_FAIL'
+export const ORDER_DELIVER_RESET = 'ORDER_DELIVER_RESET'
 
 //REDUCERS
-
-export default function orderReducer(state = orderData, action) {
+export const orderCreateReducer = (state = {}, action) => {
 	switch (action.type) {
 		case ORDER_CREATE_REQUEST:
 			return {
-				...state,
 				loading: true,
 			}
 		case ORDER_CREATE_SUCCESS:
 			return {
-				...state,
 				loading: false,
 				success: true,
 				order: action.payload,
 			}
 		case ORDER_CREATE_FAIL:
 			return {
-				...state,
 				loading: false,
 				error: action.payload,
 			}
 		case ORDER_CREATE_RESET:
-			return {
-				...state,
-			}
+			return {}
+		default:
+			return state
+	}
+}
+
+export const orderDetailsReducer = (
+	state = { loading: true, orderItems: [], shippingAddress: {} },
+	action
+) => {
+	switch (action.type) {
 		case ORDER_DETAILS_REQUEST:
 			return {
 				...state,
@@ -76,92 +69,101 @@ export default function orderReducer(state = orderData, action) {
 			}
 		case ORDER_DETAILS_SUCCESS:
 			return {
-				...state,
-				loading: true,
+				loading: false,
 				order: action.payload,
 			}
 		case ORDER_DETAILS_FAIL:
 			return {
-				...state,
 				loading: false,
 				error: action.payload,
 			}
+		default:
+			return state
+	}
+}
+
+export const orderPayReducer = (state = {}, action) => {
+	switch (action.type) {
 		case ORDER_PAY_REQUEST:
 			return {
-				...state,
 				loading: true,
 			}
 		case ORDER_PAY_SUCCESS:
 			return {
-				...state,
 				loading: false,
 				success: true,
 			}
 		case ORDER_PAY_FAIL:
 			return {
-				...state,
 				loading: false,
 				error: action.payload,
 			}
 		case ORDER_PAY_RESET:
-			return {
-				...state,
-			}
+			return {}
+		default:
+			return state
+	}
+}
+
+export const orderDeliverReducer = (state = {}, action) => {
+	switch (action.type) {
 		case ORDER_DELIVER_REQUEST:
 			return {
-				...state,
 				loading: true,
 			}
 		case ORDER_DELIVER_SUCCESS:
 			return {
-				...state,
 				loading: false,
-				error: action.payload,
+				success: true,
 			}
 		case ORDER_DELIVER_FAIL:
 			return {
-				...state,
 				loading: false,
 				error: action.payload,
 			}
 		case ORDER_DELIVER_RESET:
-			return {
-				...state,
-			}
+			return {}
+		default:
+			return state
+	}
+}
+
+export const orderListMyReducer = (state = { orders: [] }, action) => {
+	switch (action.type) {
 		case ORDER_LIST_MY_REQUEST:
 			return {
-				...state,
 				loading: true,
 			}
 		case ORDER_LIST_MY_SUCCESS:
 			return {
-				...state,
+				loading: false,
 				orders: action.payload,
 			}
 		case ORDER_LIST_MY_FAIL:
 			return {
-				...state,
+				loading: false,
 				error: action.payload,
 			}
 		case ORDER_LIST_MY_RESET:
-			return {
-				...state,
-				orders: [],
-			}
+			return { orders: [] }
+		default:
+			return state
+	}
+}
+
+export const orderListReducer = (state = { orders: [] }, action) => {
+	switch (action.type) {
 		case ORDER_LIST_REQUEST:
 			return {
-				...state,
 				loading: true,
 			}
 		case ORDER_LIST_SUCCESS:
 			return {
-				...state,
-				loading: true,
+				loading: false,
 				orders: action.payload,
 			}
 		case ORDER_LIST_FAIL:
 			return {
-				...state,
 				loading: false,
 				error: action.payload,
 			}
@@ -210,6 +212,196 @@ export const createOrder = order => async (dispatch, getState) => {
 		}
 		dispatch({
 			type: ORDER_CREATE_FAIL,
+			payload: message,
+		})
+	}
+}
+
+export const getOrderDetails = id => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: ORDER_DETAILS_REQUEST,
+		})
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo.token}`,
+			},
+		}
+
+		const { data } = await axios.get(`/api/orders/${id}`, config)
+
+		dispatch({
+			type: ORDER_DETAILS_SUCCESS,
+			payload: data,
+		})
+	} catch (error) {
+		const message =
+			error.response && error.response.data.message
+				? error.response.data.message
+				: error.message
+		if (message === 'Not authorized, token failed') {
+			dispatch(logout())
+		}
+		dispatch({
+			type: ORDER_DETAILS_FAIL,
+			payload: message,
+		})
+	}
+}
+
+export const payOrder = (orderId, paymentResult) => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: ORDER_PAY_REQUEST,
+		})
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${userInfo.token}`,
+			},
+		}
+
+		const { data } = await axios.put(
+			`/api/orders/${orderId}/pay`,
+			paymentResult,
+			config
+		)
+
+		dispatch({
+			type: ORDER_PAY_SUCCESS,
+			payload: data,
+		})
+	} catch (error) {
+		const message =
+			error.response && error.response.data.message
+				? error.response.data.message
+				: error.message
+		if (message === 'Not authorized, token failed') {
+			dispatch(logout())
+		}
+		dispatch({
+			type: ORDER_PAY_FAIL,
+			payload: message,
+		})
+	}
+}
+
+export const deliverOrder = order => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: ORDER_DELIVER_REQUEST,
+		})
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo.token}`,
+			},
+		}
+
+		const { data } = await axios.put(`/api/orders/${order._id}/deliver`, {}, config)
+
+		dispatch({
+			type: ORDER_DELIVER_SUCCESS,
+			payload: data,
+		})
+	} catch (error) {
+		const message =
+			error.response && error.response.data.message
+				? error.response.data.message
+				: error.message
+		if (message === 'Not authorized, token failed') {
+			dispatch(logout())
+		}
+		dispatch({
+			type: ORDER_DELIVER_FAIL,
+			payload: message,
+		})
+	}
+}
+
+export const listMyOrders = () => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: ORDER_LIST_MY_REQUEST,
+		})
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo.token}`,
+			},
+		}
+
+		const { data } = await axios.get(`/api/orders/myorders`, config)
+
+		dispatch({
+			type: ORDER_LIST_MY_SUCCESS,
+			payload: data,
+		})
+	} catch (error) {
+		const message =
+			error.response && error.response.data.message
+				? error.response.data.message
+				: error.message
+		if (message === 'Not authorized, token failed') {
+			dispatch(logout())
+		}
+		dispatch({
+			type: ORDER_LIST_MY_FAIL,
+			payload: message,
+		})
+	}
+}
+
+export const listOrders = () => async (dispatch, getState) => {
+	try {
+		dispatch({
+			type: ORDER_LIST_REQUEST,
+		})
+
+		const {
+			userLogin: { userInfo },
+		} = getState()
+
+		const config = {
+			headers: {
+				Authorization: `Bearer ${userInfo.token}`,
+			},
+		}
+
+		const { data } = await axios.get(`/api/orders`, config)
+
+		dispatch({
+			type: ORDER_LIST_SUCCESS,
+			payload: data,
+		})
+	} catch (error) {
+		const message =
+			error.response && error.response.data.message
+				? error.response.data.message
+				: error.message
+		if (message === 'Not authorized, token failed') {
+			dispatch(logout())
+		}
+		dispatch({
+			type: ORDER_LIST_FAIL,
 			payload: message,
 		})
 	}
