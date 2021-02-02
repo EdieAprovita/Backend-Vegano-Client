@@ -1,4 +1,4 @@
-import axios from 'axios'
+import serviceStore from '../services/service'
 
 //TYPES
 
@@ -58,7 +58,7 @@ export const cartReducer = (state = { cartItems: [], shippingAddress: {} }, acti
 //ACTIONS
 
 export const addToCart = (id, qty) => async (dispatch, getState) => {
-	const { data } = await axios.get(`/api/products/${id}`)
+	const { data } = await serviceStore.get(`/api/products/${id}`)
 
 	dispatch({
 		type: CART_ADD_ITEM,
